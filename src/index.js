@@ -11,46 +11,11 @@ function Square(props) {
 }
 
 class Board extends React.Component {
-	constructor(props) {
-		super(props);
-
-		this.state = {
-			squares: Array(9).fill(null),
-			xIsNext: true,
-		};
-	}
-
-	handleClick(i) {
-		const squares 	 = this.state.squares.slice();
-
-		// ignore if the game is won or if the square is filled
-		if (calculateWinner(squares) || squares[i]) {
-			return;
-		}
-
-		squares[i] = this.state.xIsNext ? 'X' : 'O';
-
-	  	this.setState({
-			squares,
-			xIsNext: !this.state.xIsNext,
-		});
-	}
-
-	getStatus() {
-		const winner = calculateWinner(this.state.squares);
-
-		if (winner) {
-			return `Winner is ${winner}`;
-		}
-
-		return `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
-	}
-
 	renderSquare(i) {
 		return (
 			<Square
-				value={this.state.squares[i]}
-				onClick={() => this.handleClick(i)}
+				value={this.props.squares[i]}
+				onClick={() => this.props.onClick(i)}
 			/>
 		);
 	}
@@ -58,7 +23,6 @@ class Board extends React.Component {
 	render() {
 		return (
 			<div>
-				<div className="status">{this.getStatus()}</div>
 				<div className="board-row">
 					{this.renderSquare(0)}
 					{this.renderSquare(1)}
@@ -80,14 +44,58 @@ class Board extends React.Component {
 }
 
 class Game extends React.Component {
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			history: [{
+				squares: Array(9).fill(null)
+			}],
+			xIsNext: true,
+		};
+	}
+
+	getStatus(squares) {
+		const winner = calculateWinner(squares);
+
+		if (winner) {
+			return `Winner is ${winner}`;
+		}
+
+		return `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
+	}
+
+	handleClick(i) {
+		// create a copy of the squares array
+		const currentIdx = (this.state.history.length - 1);
+		const squares 	 = this.state.history[currentIdx].squares.slice();
+
+		// ignore if the game is won or if the square is filled
+		if (calculateWinner(squares) || squares[i]) {
+			return;
+		}
+
+		squares[i] = this.state.xIsNext ? 'X' : 'O';
+
+		this.setState({
+			history: this.state.history.concat([{squares}]),
+			xIsNext: !this.state.xIsNext,
+		});
+	}
+
 	render() {
+		const current = this.state.history[(this.state.history.length - 1)];
+
 		return (
 			<div className="game">
 				<div className="game-board">
-					<Board />
+					<Board
+						squares={current.squares}
+						onClick={(i) => this.handleClick(i)}
+					/>
 				</div>
 				<div className="game-info">
-					<div>{/* status */}</div>
+					<div>{this.getStatus(current.squares)}</div>
 					<ol>{/* TODO */}</ol>
 				</div>
 			</div>
