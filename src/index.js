@@ -30,6 +30,16 @@ class Board extends React.Component {
 		});
 	}
 
+	getStatus() {
+		const winner = calculateWinner(this.state.squares);
+
+		if (winner) {
+			return `Winner is ${winner}`;
+		}
+
+		return `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
+	}
+
 	renderSquare(i) {
 		return (
 			<Square
@@ -40,11 +50,9 @@ class Board extends React.Component {
 	}
 
 	render() {
-		const status = `Next player is ${this.state.xIsNext ? 'X' : 'O'}`;
-
 		return (
 			<div>
-				<div className="status">{status}</div>
+				<div className="status">{this.getStatus()}</div>
 				<div className="board-row">
 					{this.renderSquare(0)}
 					{this.renderSquare(1)}
@@ -87,3 +95,29 @@ ReactDOM.render(
 	<Game />,
 	document.getElementById('root')
 );
+
+function calculateWinner(squares) {
+	const lines = [
+		[0,1,2],
+		[3,4,5],
+		[6,7,8],
+		[0,3,6],
+		[1,4,7],
+		[2,5,8],
+		[0,4,8],
+		[2,4,6],
+	];
+
+	for (let i =0; i < lines.length; i++) {
+		const [a, b, c] = lines[i];
+		const playerS1 	= squares[a];
+		const playerS2 	= squares[b];
+		const playerS3 	= squares[c];
+
+		if (playerS1 && playerS1 === playerS2 && playerS1 === playerS3) {
+			return playerS1;
+		}
+	}
+
+	return null;
+}
