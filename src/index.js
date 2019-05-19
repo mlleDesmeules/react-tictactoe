@@ -82,8 +82,9 @@ class Game extends React.Component {
 
 	handleClick(i) {
 		// create a copy of the squares array
-		const currentIdx = (this.state.history.length - 1);
-		const squares 	 = this.state.history[currentIdx].squares.slice();
+		const history = this.state.history.slice(0, this.state.stepNumber + 1);
+		const current = history[history.length - 1];
+		const squares = current.squares.slice();
 
 		// ignore if the game is won or if the square is filled
 		if (calculateWinner(squares) || squares[i]) {
@@ -93,17 +94,21 @@ class Game extends React.Component {
 		squares[i] = this.state.xIsNext ? 'X' : 'O';
 
 		this.setState({
-			history: this.state.history.concat([{squares}]),
-			xIsNext: !this.state.xIsNext,
+			history	  : history.concat([{squares}]),
+			stepNumber: history.length,
+			xIsNext	  : !this.state.xIsNext,
 		});
 	}
 
-	jumpTo() {
-
+	jumpTo(step) {
+		this.setState({
+			stepNumber: step,
+			xIsNext  : ((step % 2) === 0),
+		})
 	}
 
 	render() {
-		const current = this.state.history[(this.state.history.length - 1)];
+		const current = this.state.history[this.state.stepNumber];
 
 		return (
 			<div className="game">
