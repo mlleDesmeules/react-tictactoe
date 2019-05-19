@@ -51,8 +51,23 @@ class Game extends React.Component {
 			history: [{
 				squares: Array(9).fill(null)
 			}],
+			stepNumber: 0,
 			xIsNext: true,
 		};
+	}
+
+	getHistory() {
+		return this.state.history.map((step, move) => {
+			const description = move ? `Go to move #${move}` : `Go to game start`;
+
+			return (
+				<li key={move}>
+					<button onClick={() => this.jumpTo(move) }>
+						{description}
+					</button>
+				</li>
+			);
+		});
 	}
 
 	getStatus(squares) {
@@ -83,6 +98,10 @@ class Game extends React.Component {
 		});
 	}
 
+	jumpTo() {
+
+	}
+
 	render() {
 		const current = this.state.history[(this.state.history.length - 1)];
 
@@ -96,7 +115,7 @@ class Game extends React.Component {
 				</div>
 				<div className="game-info">
 					<div>{this.getStatus(current.squares)}</div>
-					<ol>{/* TODO */}</ol>
+					<ol>{this.getHistory()}</ol>
 				</div>
 			</div>
 		);
